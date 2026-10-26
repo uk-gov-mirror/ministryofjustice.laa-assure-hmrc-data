@@ -11,7 +11,31 @@ permissions: {}
 
 jobs:
   brakeman:
-    uses: ministryofjustice/laa-reusable-github-actions/.github/workflows/brakeman.yml@932ee576d65d9992ca82955a5823e3d55e888417 # main as of 28/07/2026
     permissions:
       contents: read # for actions/checkout
       security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #--v7.0.1
+
+      - name: Set up ruby # this should inherit from your .ruby-version
+        uses: ruby/setup-ruby@26e5b7d197ebf60545ee9667bcbace0be11ccaec #--v1.3334.0
+
+      - name: Setup Brakeman
+        run: |
+          gem install brakeman
+
+      # Execute Brakeman CLI and generate a SARIF output with the security issues identified during the analysis
+      - name: Scan
+        continue-on-error: true
+        run: |
+          brakeman -f sarif -o output.sarif.json .
+
+      # Upload the SARIF file generated in the previous step
+      - name: Upload SARIF
+        uses: github/codeql-action/upload-sarif@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd #--v4.37.7
+        with:
+          sarif_file: output.sarif.json
