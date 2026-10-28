@@ -26,9 +26,13 @@ RUN apk add --no-cache \
   yaml-dev \
   clamav-daemon
 
+# Use latest ca-certificates and ca-certificates-bundle to ensure secure connections, came outof eMudhra incident
 RUN apk add --no-cache --upgrade \
     ca-certificates \
     ca-certificates-bundle
+
+# Upgrade npm to 12+ to mitigate security vulnerabilities in 11.12.1
+RUN npm install --global --ignore-scripts --no-audit --no-fund "npm@12.0.0"
 
 # activate yarn
 RUN npm install --global \
@@ -128,6 +132,12 @@ RUN RAILS_ENV=production \
 # Cleanup to save space in the production image
 RUN rm -rf node_modules && \
     yarn cache clean
+
+# Remove potentially vulnerable npm installation
+RUN apk del npm \
+ && rm -rf /usr/local/lib/node_modules/npm \
+           /usr/local/bin/npm \
+           /usr/local/bin/npx
 
 # non-root user should own these directories
 # log: for log file writing
