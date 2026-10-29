@@ -6,7 +6,7 @@
     "esbuild": "^0.28.2",
     "govuk-frontend": "^6.6.0",
     "moment": "^2.31.0",
-    "sass": "^1.105.1"
+    "sass": "^1.106.1"
   },
   "scripts": {
     "build": "esbuild app/javascript/*.* --bundle --sourcemap --minify --outdir=app/assets/builds --public-path=assets",
