@@ -5,7 +5,7 @@ class DefaultQueueNameService
 
   def call
     if Rails.host.uat?
-      "default-#{uat_queue_name}"
+      "default-#{release_name}"
     else
       "default"
     end
@@ -13,8 +13,15 @@ class DefaultQueueNameService
 
 private
 
-  def uat_queue_name
-    branch_name = Rails.configuration.x.status.app_branch
-    branch_name.tr(" _/[]().", "-")
+  # See https://github.com/ministryofjustice/laa-civil-apply-build-and-push/blob/main/action.yml#L62
+  # for branch naming conventions
+  def release_name
+    Rails.configuration.x.status.app_branch
+      .downcase
+      .squish
+      .sub(/\A\w*\//, "")
+      .tr_s(" _/[]().", "-")
+      .slice(0, 30)
+      .delete_suffix("-")
   end
 end
