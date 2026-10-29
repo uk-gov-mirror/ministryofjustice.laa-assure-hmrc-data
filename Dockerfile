@@ -20,19 +20,17 @@ LABEL org.opencontainers.image.vendor="Ministry of Justice" \
 # yaml-dev: required to build the psych gem, which is a dependency of rails
 # clamav-daemon: required to run clamav in the container, which is used by
 RUN apk add --no-cache \
-  postgresql-dev \
+  clamav-daemon \
   nodejs-current \
   npm \
-  yaml-dev \
-  clamav-daemon
+  postgresql-dev \
+  yaml-dev
 
-# Use latest ca-certificates and ca-certificates-bundle to ensure secure connections, came outof eMudhra incident
+
+# Use latest ca-certificates and ca-certificates-bundle to ensure secure connections, came out of eMudhra incident
 RUN apk add --no-cache --upgrade \
     ca-certificates \
     ca-certificates-bundle
-
-# Upgrade npm to 12+ to mitigate security vulnerabilities in 11.12.1
-RUN npm install --global --ignore-scripts --no-audit --no-fund "npm@12.0.0"
 
 # activate yarn
 RUN npm install --global \
